@@ -1,0 +1,35 @@
+---
+- name: Install packages
+  ansible.builtin.package:
+    name:
+      - linuxptp
+      - chrony
+
+- name: Disable builtin NTP daemon(s)
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    # - systemd-timesyncd.service
+    - chrony.service
+
+- name: Configure daemons
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart timemaster
+  loop:
+    - src: timemaster.conf.j2
+      dest: /etc/linuxptp/timemaster.conf
+    - src: chrony.conf.j2
+      dest: /etc/chrony/chrony.conf
+
+- name: Enable timemaster.service
+  ansible.builtin.service:
+    name: timemaster.service
+    state: started
+    enabled: true

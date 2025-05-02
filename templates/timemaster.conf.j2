@@ -1,0 +1,41 @@
+# Configuration file for timemaster
+
+{% for d in timemaster_ptp_domains %}
+[ptp_domain {{ d.id | string }}]
+interfaces {{ d.interfaces | join(" ") }}
+delay {{ d.delay | default("10e-7") }}
+ptp4l_option {{ d.ptp4l_option }}
+
+{% endfor %}
+{% for s in timemaster_ntp_servers %}
+[ntp_server {{ s.server }}]
+minpoll {{ s.minpoll | default("4") | string }}
+maxpoll {{ s.maxpoll | default("4") | string }}
+iburst {{ s.iburst | default("1") | string }}
+
+{% endfor %}
+[timemaster]
+ntp_program chronyd
+
+[chrony.conf]
+include /etc/chrony/chrony.conf
+
+[ntp.conf]
+includefile /etc/ntp.conf
+
+[ptp4l.conf]
+tx_timestamp_timeout 100
+clock_servo linreg
+
+[chronyd]
+path /usr/sbin/chronyd
+
+[ntpd]
+path /usr/sbin/ntpd
+options -u ntp:ntp -g
+
+[phc2sys]
+path /usr/sbin/phc2sys
+
+[ptp4l]
+path /usr/sbin/ptp4l

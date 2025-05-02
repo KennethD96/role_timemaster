@@ -1,0 +1,12 @@
+---
+timemaster_ntp_servers:
+  - server: ntp.justervesenet.no
+  - server: time.cloudflare.com
+  - server: time.google.com
+
+timemaster_ptp_domains: []
+  # - id: 0
+  #   interfaces:
+  #     - eth0
+  #   delay: "10e-7"
+  #   ptp4l_option clock_servo linreg
